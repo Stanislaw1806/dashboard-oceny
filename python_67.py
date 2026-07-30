@@ -55,7 +55,7 @@ if st.sidebar.button("Wyloguj"):
 st.sidebar.write(f"Zalogowany użytkownik: **{st.session_state.get('username', 'Użytkownik')}**")
 st.sidebar.write("---")
 
-# 2. Własny styl CSS (zablokowany scrollbar na wykresach dzięki overflow: hidden)
+# 2. Własny styl CSS (zwiększony dolny padding dla kafelków wykresów, żeby nic nie dotykało krawędzi)
 st.markdown("""
 <style>
 .stApp { background: linear-gradient(135deg, #16161a, #24243e, #0f0c29); }
@@ -77,13 +77,13 @@ st.markdown("""
     border-color: rgba(0, 210, 255, 0.3) !important;
 }
 
-/* Wykresy bez pasków przewijania (overflow: hidden) i z zachowanym efektem kafelka */
+/* Zwiększony dolny padding w karcie wykresu (35px), aby napisy u dołu miały bezpieczny margines */
 [data-testid="stPlotlyChart"] {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
     border-radius: 15px !important;
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 15px;
+    padding: 15px 15px 35px 15px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
     overflow: hidden !important;
 }
@@ -336,7 +336,7 @@ with zakladka1:
             wykres_kolo.update_layout(
                 **ustawienia_wykresu,
                 legend=dict(font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-                margin=dict(t=40, b=20, l=20, r=20)
+                margin=dict(t=40, b=30, l=20, r=20)
             )
             st.plotly_chart(wykres_kolo, use_container_width=True, config={'displayModeBar': False})
 
@@ -353,13 +353,13 @@ with zakladka1:
             fill='tozeroy',
             fillcolor='rgba(0, 210, 255, 0.1)'
         )
-        # Zwiększony dolny margines (b=40), dzięki czemu podpis "Semestr 4" nigdy nie zostanie ucięty
+        # Znacznie powiększony dolny margines (b=60), aby etykiety osi X miały mnóstwo przestrzeni
         wykres_linia.update_layout(
             **ustawienia_wykresu, 
             xaxis_title=None, 
             yaxis=dict(range=[3.0, 5.2], gridcolor='rgba(255,255,255,0.05)'), 
             xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-            margin=dict(t=40, b=40, l=20, r=20)
+            margin=dict(t=40, b=60, l=20, r=20)
         ) 
         st.plotly_chart(wykres_linia, use_container_width=True, config={'displayModeBar': False})
 
@@ -382,7 +382,7 @@ with zakladka1:
             xaxis=dict(range=[3.0, 5.2], gridcolor='rgba(255,255,255,0.05)'), 
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
             legend=dict(title="Ocena", font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-            margin=dict(t=40, b=30, l=20, r=20)
+            margin=dict(t=40, b=40, l=20, r=20)
         )
         st.plotly_chart(wykres_bar, use_container_width=True, config={'displayModeBar': False})
 
