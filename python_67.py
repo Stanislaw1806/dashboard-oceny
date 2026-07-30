@@ -234,9 +234,16 @@ def generuj_pdf(srednia_ogolna, suma_ects, cel_ects, df_dane):
 zakladka1, zakladka2 = st.tabs(["Panel Główny", "Symulator Przyszłości"])
 
 with zakladka1:
-    st.sidebar.title("Filtrowanie danych")
+    st.title("Dashboard Ocenowy")
+    st.write("---")
+
+    # Kafelki (pigułki) do wyboru zakresu u góry strony
+    st.markdown("##### Wybierz zakres do analizy:")
     lista_semestrow = ["Całe studia"] + [f"Semestr {s}" for s in sorted(df_pelne['semestr'].unique())]
-    wybrany_zakres = st.sidebar.selectbox("Wybierz zakres do analizy:", lista_semestrow)
+    wybrany_zakres = st.pills("Wybierz zakres", lista_semestrow, default="Całe studia", label_visibility="collapsed")
+
+    if wybrany_zakres is None:
+        wybrany_zakres = "Całe studia"
 
     if wybrany_zakres == "Całe studia":
         df_filtered = df
@@ -246,7 +253,6 @@ with zakladka1:
         df_filtered = df[df['semestr'] == nr_semestru]
         df_zal_filtered = df_zal[df_zal['semestr'] == nr_semestru]
 
-    st.title("Dashboard Ocenowy")
     st.write("---")
 
     suma_ects_global = df['ects'].sum() + df_zal['ects'].sum()
