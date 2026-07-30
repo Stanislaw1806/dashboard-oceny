@@ -55,7 +55,7 @@ if st.sidebar.button("Wyloguj"):
 st.sidebar.write(f"Zalogowany użytkownik: **{st.session_state.get('username', 'Użytkownik')}**")
 st.sidebar.write("---")
 
-# 2. Własny styl CSS (efekt hover tylko dla ładnych kafelków i metryk, wykresy pozostają czyste i stabilne)
+# 2. Własny styl CSS (zablokowany scrollbar na wykresach dzięki overflow: hidden)
 st.markdown("""
 <style>
 .stApp { background: linear-gradient(135deg, #16161a, #24243e, #0f0c29); }
@@ -77,6 +77,7 @@ st.markdown("""
     border-color: rgba(0, 210, 255, 0.3) !important;
 }
 
+/* Wykresy bez pasków przewijania (overflow: hidden) i z zachowanym efektem kafelka */
 [data-testid="stPlotlyChart"] {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
@@ -84,6 +85,7 @@ st.markdown("""
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 15px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    overflow: hidden !important;
 }
 
 h1, h2, h3, p, div, label, span { color: #e0e0e0 !important; }
@@ -333,9 +335,10 @@ with zakladka1:
             wykres_kolo.update_traces(textinfo='percent+label')
             wykres_kolo.update_layout(
                 **ustawienia_wykresu,
-                legend=dict(font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+                legend=dict(font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+                margin=dict(t=40, b=20, l=20, r=20)
             )
-            st.plotly_chart(wykres_kolo, use_container_width=True)
+            st.plotly_chart(wykres_kolo, use_container_width=True, config={'displayModeBar': False})
 
     with kol2:
         st.subheader("Trend średniej (Całe studia)")
@@ -350,13 +353,15 @@ with zakladka1:
             fill='tozeroy',
             fillcolor='rgba(0, 210, 255, 0.1)'
         )
+        # Zwiększony dolny margines (b=40), dzięki czemu podpis "Semestr 4" nigdy nie zostanie ucięty
         wykres_linia.update_layout(
             **ustawienia_wykresu, 
             xaxis_title=None, 
             yaxis=dict(range=[3.0, 5.2], gridcolor='rgba(255,255,255,0.05)'), 
-            xaxis=dict(gridcolor='rgba(255,255,255,0.05)')
+            xaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
+            margin=dict(t=40, b=40, l=20, r=20)
         ) 
-        st.plotly_chart(wykres_linia, use_container_width=True)
+        st.plotly_chart(wykres_linia, use_container_width=True, config={'displayModeBar': False})
 
     st.subheader(f"Ranking przedmiotów ({wybrany_zakres})")
     ranking = df_filtered.sort_values(by=['ocena', 'przedmiot'], ascending=[True, True]) 
@@ -376,9 +381,10 @@ with zakladka1:
             yaxis_title=None, 
             xaxis=dict(range=[3.0, 5.2], gridcolor='rgba(255,255,255,0.05)'), 
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
-            legend=dict(title="Ocena", font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+            legend=dict(title="Ocena", font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+            margin=dict(t=40, b=30, l=20, r=20)
         )
-        st.plotly_chart(wykres_bar, use_container_width=True)
+        st.plotly_chart(wykres_bar, use_container_width=True, config={'displayModeBar': False})
 
     with st.expander("Kliknij, aby zobaczyć surowe dane"):
         df_do_tabeli = pd.concat([df_filtered, df_zal_filtered])
