@@ -55,12 +55,12 @@ if st.sidebar.button("Wyloguj"):
 st.sidebar.write(f"Zalogowany użytkownik: **{st.session_state.get('username', 'Użytkownik')}**")
 st.sidebar.write("---")
 
-# 2. Własny styl CSS (z poprawionym overflow: visible, żeby nic nie ucinało animacji)
+# 2. Własny styl CSS (bezpieczny dla wykresów, unikający błędów renderowania)
 st.markdown("""
 <style>
 .stApp { background: linear-gradient(135deg, #16161a, #24243e, #0f0c29); }
 
-[data-testid="stMetric"], [data-testid="stPlotlyChart"], div[data-testid="stExpander"] {
+[data-testid="stMetric"], div[data-testid="stExpander"] {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -68,14 +68,22 @@ st.markdown("""
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 15px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    overflow: visible !important;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
 }
 
-[data-testid="stMetric"]:hover, [data-testid="stPlotlyChart"]:hover, div[data-testid="stExpander"]:hover {
-    transform: translateY(-5px) !important;
+[data-testid="stMetric"]:hover, div[data-testid="stExpander"]:hover {
+    transform: translateY(-3px) !important;
     box-shadow: 0 12px 40px 0 rgba(0, 210, 255, 0.15) !important;
     border-color: rgba(0, 210, 255, 0.3) !important;
+}
+
+[data-testid="stPlotlyChart"] {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border-radius: 15px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 h1, h2, h3, p, div, label, span { color: #e0e0e0 !important; }
@@ -322,12 +330,11 @@ with zakladka1:
                 rozklad, names='Ocena', values='Liczba', hole=0.4, 
                 color='Ocena', color_discrete_map=kolory_ocen
             )
-            # Wygładzony efekt wysuwania segmentu po najechaniu myszką (pull)
+            # Prawidłowy, zwarty donut z płynną interakcją najeżdżania (hover)
             wykres_kolo.update_traces(
                 textinfo='percent+label',
                 hoverinfo='label+value+percent',
-                textfont_size=12,
-                pull=[0.05] * len(rozklad)
+                textfont_size=12
             )
             wykres_kolo.update_layout(
                 **ustawienia_wykresu,
