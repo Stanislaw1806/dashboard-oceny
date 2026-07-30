@@ -192,7 +192,7 @@ def generuj_pdf(srednia_ogolna, suma_ects, cel_ects, df_dane):
 # ==========================================
 # TWORZENIE ZAKŁADEK
 # ==========================================
-zakladka1, zakladka2 = st.tabs(["Centrum Dowodzenia", "Symulator Przyszłości"])
+zakladka1, zakladka2 = st.tabs(["Panel Główny", "Symulator Przyszłości"])
 
 with zakladka1:
     st.sidebar.title("Filtrowanie danych")
@@ -207,7 +207,7 @@ with zakladka1:
         df_filtered = df[df['semestr'] == nr_semestru]
         df_zal_filtered = df_zal[df_zal['semestr'] == nr_semestru]
 
-    st.title("Centrum Dowodzenia Studiami")
+    st.title("Dashboard Ocenowy")
     st.write("---")
 
     suma_ects_global = df['ects'].sum() + df_zal['ects'].sum()
