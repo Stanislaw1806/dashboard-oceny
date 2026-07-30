@@ -55,7 +55,7 @@ if st.sidebar.button("Wyloguj"):
 st.sidebar.write(f"Zalogowany użytkownik: **{st.session_state.get('username', 'Użytkownik')}**")
 st.sidebar.write("---")
 
-# 2. Własny styl CSS z efektem "hover" (unoszenia się kafelków i wykresów)
+# 2. Własny styl CSS (z poprawionym overflow: visible, żeby nic nie ucinało animacji)
 st.markdown("""
 <style>
 .stApp { background: linear-gradient(135deg, #16161a, #24243e, #0f0c29); }
@@ -68,11 +68,10 @@ st.markdown("""
     border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 15px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    overflow: hidden !important;
+    overflow: visible !important;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
 }
 
-/* Efekt unoszenia i rozświetlenia po najechaniu myszką na kafelek/wykres */
 [data-testid="stMetric"]:hover, [data-testid="stPlotlyChart"]:hover, div[data-testid="stExpander"]:hover {
     transform: translateY(-5px) !important;
     box-shadow: 0 12px 40px 0 rgba(0, 210, 255, 0.15) !important;
@@ -323,11 +322,12 @@ with zakladka1:
                 rozklad, names='Ocena', values='Liczba', hole=0.4, 
                 color='Ocena', color_discrete_map=kolory_ocen
             )
-            # Włączenie efektu wysuwania segmentu po najechaniu myszką
+            # Wygładzony efekt wysuwania segmentu po najechaniu myszką (pull)
             wykres_kolo.update_traces(
                 textinfo='percent+label',
                 hoverinfo='label+value+percent',
-                textfont_size=12
+                textfont_size=12,
+                pull=[0.05] * len(rozklad)
             )
             wykres_kolo.update_layout(
                 **ustawienia_wykresu,
