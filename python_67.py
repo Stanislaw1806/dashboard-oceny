@@ -55,13 +55,12 @@ if st.sidebar.button("Wyloguj"):
 st.sidebar.write(f"Zalogowany użytkownik: **{st.session_state.get('username', 'Użytkownik')}**")
 st.sidebar.write("---")
 
-# 2. Własny styl CSS (przywrócone ramki, podświetlenia i ładny wygląd kart)
+# 2. Własny styl CSS (efekt hover tylko dla ładnych kafelków i metryk, wykresy pozostają czyste i stabilne)
 st.markdown("""
 <style>
 .stApp { background: linear-gradient(135deg, #16161a, #24243e, #0f0c29); }
 
-/* Styl kart metryk, expandera oraz wykresów */
-[data-testid="stMetric"], div[data-testid="stExpander"], [data-testid="stPlotlyChart"] {
+[data-testid="stMetric"], div[data-testid="stExpander"] {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -72,10 +71,19 @@ st.markdown("""
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease !important;
 }
 
-[data-testid="stMetric"]:hover, div[data-testid="stExpander"]:hover, [data-testid="stPlotlyChart"]:hover {
+[data-testid="stMetric"]:hover, div[data-testid="stExpander"]:hover {
     transform: translateY(-3px) !important;
     box-shadow: 0 12px 40px 0 rgba(0, 210, 255, 0.15) !important;
     border-color: rgba(0, 210, 255, 0.3) !important;
+}
+
+[data-testid="stPlotlyChart"] {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    border-radius: 15px !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
 }
 
 h1, h2, h3, p, div, label, span { color: #e0e0e0 !important; }
@@ -322,19 +330,12 @@ with zakladka1:
                 rozklad, names='Ocena', values='Liczba', hole=0.4, 
                 color='Ocena', color_discrete_map=kolory_ocen
             )
-            # Prawidłowa interaktywność i hover dla Donut charta w Plotly
-            wykres_kolo.update_traces(
-                textinfo='percent+label',
-                hoverinfo='label+value+percent',
-                textfont_size=12,
-                marker=dict(line=dict(color='#16161a', width=2))
-            )
+            wykres_kolo.update_traces(textinfo='percent+label')
             wykres_kolo.update_layout(
                 **ustawienia_wykresu,
-                legend=dict(font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-                hoverlabel=dict(bgcolor="#1e3d59", font_size=13, font_family="Arial")
+                legend=dict(font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
             )
-            st.plotly_chart(wykres_kolo, use_container_width=True, config={'displayModeBar': False})
+            st.plotly_chart(wykres_kolo, use_container_width=True)
 
     with kol2:
         st.subheader("Trend średniej (Całe studia)")
@@ -342,14 +343,12 @@ with zakladka1:
         srednia_semestr.columns = ['Semestr', 'Średnia']
         srednia_semestr['Semestr_etykieta'] = "Semestr " + srednia_semestr['Semestr'].astype(str)
         
-        # Wygładzenie linii wykresu (shape='spline') zapobiega ostrym i kanciastym krawędziom
         wykres_linia = px.line(srednia_semestr, x='Semestr_etykieta', y='Średnia', markers=True)
         wykres_linia.update_traces(
             line_color='#00d2ff', 
             marker=dict(size=10, color='#3a7bd5'),
             fill='tozeroy',
-            fillcolor='rgba(0, 210, 255, 0.1)',
-            line_shape='spline'
+            fillcolor='rgba(0, 210, 255, 0.1)'
         )
         wykres_linia.update_layout(
             **ustawienia_wykresu, 
@@ -357,7 +356,7 @@ with zakladka1:
             yaxis=dict(range=[3.0, 5.2], gridcolor='rgba(255,255,255,0.05)'), 
             xaxis=dict(gridcolor='rgba(255,255,255,0.05)')
         ) 
-        st.plotly_chart(wykres_linia, use_container_width=True, config={'displayModeBar': False})
+        st.plotly_chart(wykres_linia, use_container_width=True)
 
     st.subheader(f"Ranking przedmiotów ({wybrany_zakres})")
     ranking = df_filtered.sort_values(by=['ocena', 'przedmiot'], ascending=[True, True]) 
@@ -379,7 +378,7 @@ with zakladka1:
             yaxis=dict(gridcolor='rgba(255,255,255,0.05)'),
             legend=dict(title="Ocena", font=dict(color='#e0e0e0'), orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
         )
-        st.plotly_chart(wykres_bar, use_container_width=True, config={'displayModeBar': False})
+        st.plotly_chart(wykres_bar, use_container_width=True)
 
     with st.expander("Kliknij, aby zobaczyć surowe dane"):
         df_do_tabeli = pd.concat([df_filtered, df_zal_filtered])
